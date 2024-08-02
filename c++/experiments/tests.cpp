@@ -4,6 +4,9 @@
 #include "kth_statistic.h"
 #include "tests.h"
 
+#include "kth_statistic_stl.h"
+#include "kth_statistic_hoare.h"
+
 void test_all(kth_statistic<int> *algorithm) {
     for (size_t size = 1; size <= 16; ++size) {
         test_all_01s(algorithm, size);
