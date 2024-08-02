@@ -21,7 +21,7 @@ public:
             for (size_t k = 0; k < size; ++k) {
                 array_copy(reference_array, size, working_array);
                 int result = algorithm->find(working_array, size, k);
-                if (result != k) {
+                if (result != int(k)) {
                     std::cerr << "[test_all_perms, " << algorithm->name()
                               << "] Expected " << k << ", found " << result
                               << " on test: k = " << k << ", array [";
@@ -39,7 +39,7 @@ public:
         } else {
             for (size_t v = 0; v < size; ++v) {
                 if (!(used_mask & (1 << v))) {
-                    reference_array[depth] = v;
+                    reference_array[depth] = int(v);
                     go(depth + 1, used_mask | (1 << v));
                 }
             }
