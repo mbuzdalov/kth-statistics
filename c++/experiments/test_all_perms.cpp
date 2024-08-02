@@ -47,8 +47,8 @@ public:
     }
 
     ~wrapper() {
-        delete reference_array;
-        delete working_array;
+        delete[] reference_array;
+        delete[] working_array;
     }
 };
 

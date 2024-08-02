@@ -33,5 +33,5 @@ void test_all_01s(kth_statistic<int> *algorithm, size_t size) {
             }
         }
     }
-    delete values;
+    delete[] values;
 }

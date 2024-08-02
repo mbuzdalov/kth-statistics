@@ -49,6 +49,6 @@ void test_random(kth_statistic<int> *algorithm, size_t size, size_t count, size_
         }
     }
 
-    delete reference;
-    delete working;
+    delete[] reference;
+    delete[] working;
 }
