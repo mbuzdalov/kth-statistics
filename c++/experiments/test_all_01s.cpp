@@ -4,26 +4,7 @@
 #include <iostream>
 
 void test_all_01s(kth_statistic<int> *algorithm, size_t size) {
-    if (algorithm == nullptr) {
-        std::cerr << "[test_all_01s] Error: algorithm is null"
-                  << std::endl;
-        std::exit(1);
-    }
-    if (size > 30) {
-        std::cerr << "[test_all_01s, " << algorithm->name()
-                  << "] Error: size is too large (" << size << ")"
-                  << std::endl;
-        std::exit(1);
-    }
-
-    algorithm->resize(size);
-    if (algorithm->size() < size) {
-        std::cerr << "[test_all_01s, " << algorithm->name()
-                  << "] After resize, the size is still too small ("
-                  << algorithm->size() << " while expecting at least " << size << ")"
-                  << std::endl;
-        std::exit(1);
-    }
+    test_common(algorithm, size, "test_all_01s", 30);
 
     int *values = new int[size];
     size_t mask_max = size_t(1) << size;

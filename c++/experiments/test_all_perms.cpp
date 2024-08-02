@@ -1,4 +1,5 @@
 #include "tests.h"
+#include "util.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -18,9 +19,7 @@ public:
     void go(size_t depth, size_t used_mask) {
         if (depth == size) {
             for (size_t k = 0; k < size; ++k) {
-                for (size_t i = 0; i < size; ++i) {
-                    working_array[i] = reference_array[i];
-                }
+                array_copy(reference_array, size, working_array);
                 int result = algorithm->find(working_array, size, k);
                 if (result != k) {
                     std::cerr << "[test_all_perms, " << algorithm->name()
@@ -54,27 +53,7 @@ public:
 };
 
 void test_all_perms(kth_statistic<int> *algorithm, size_t size) {
-    if (algorithm == nullptr) {
-        std::cerr << "[test_all_01s] Error: algorithm is null"
-                  << std::endl;
-        std::exit(1);
-    }
-    if (size > 10) {
-        std::cerr << "[test_all_01s, " << algorithm->name()
-                  << "] Error: size is too large (" << size << ")"
-                  << std::endl;
-        std::exit(1);
-    }
-
-    algorithm->resize(size);
-    if (algorithm->size() < size) {
-        std::cerr << "[test_all_01s, " << algorithm->name()
-                  << "] After resize, the size is still too small ("
-                  << algorithm->size() << " while expecting at least " << size << ")"
-                  << std::endl;
-        std::exit(1);
-    }
-
+    test_common(algorithm, size, "test_all_perms", 10);
     wrapper w(algorithm, size);
     w.go(0, 0);
 }
