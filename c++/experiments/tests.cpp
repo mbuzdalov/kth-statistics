@@ -29,11 +29,11 @@ void test_all(kth_statistic<int> *algorithm) {
 }
 
 int main() {
-    kth_statistic<int> *stl_int = new stl_kth_statistic<int>();
-    test_all(stl_int);
-    delete stl_int;
+    stl_kth_statistic<int> stl_int;
+    test_all(&stl_int);
 
-    kth_statistic<int> *hoare_mid_int = new bidirectional_hoare_middle<int>();
-    test_all(hoare_mid_int);
-    delete hoare_mid_int;
+    bidirectional_hoare_middle<int> hoare_mid_int;
+    test_all(&hoare_mid_int);
+
+    return 0;
 }
