@@ -1,6 +1,6 @@
-# Algorithms for finding the k-th statistic
+# Algorithms for finding the k-th order statistic
 
-A k-th statistic of a sequence of elements with a total ordering
+A k-th order statistic of a sequence of elements with a total ordering
 is the element which would be k-th if this sequence was to be sorted according to this ordering.
 
 This problem could be solved by sorting (in time O(n log n) where n is the number of elements),
@@ -18,5 +18,5 @@ these two requirements: namely, we allow up to O(n) of additional memory to be p
 and we also allow the original sequence to be completely destroyed.
 
 The latter is not a problem in certain applications, where the sequence is generated
-from some other structure, and the k-th statistic is used to guide other operations.
+from some other structure, and the k-th order statistic is used to guide other operations.
 An example of this approach is multi-dimensional divide-and-conquer algorithms.

@@ -6,7 +6,7 @@
 #include <utility>
 
 /*
- * A k-th statistic of a sequence of elements with a total ordering
+ * A k-th order statistic of a sequence of elements with a total ordering
  * is the element which would be k-th if this sequence was to be sorted according to this ordering.
  *
  * This problem could be solved by sorting (in time O(n log n) where n is the number of elements),
