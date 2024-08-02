@@ -1,5 +1,4 @@
-#ifndef __KTH_STATISTIC_H__
-#define __KTH_STATISTIC_H__
+#pragma once
 
 #include <algorithm>
 #include <limits>
@@ -52,5 +51,3 @@ struct stl_kth_statistic : kth_statistic<element_t> {
         return *kth;
     }
 };
-
-#endif
