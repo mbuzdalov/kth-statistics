@@ -108,6 +108,15 @@ struct uniform_int_generator : sequence_changer<element_t> {
     }
 };
 
+template<typename element_t, typename comparator_t>
+struct sorter : sequence_changer<element_t> {
+    comparator_t cmp;
+
+    void generate(element_t *array, size_t size) {
+        std::sort(array, array + size, cmp);
+    }
+};
+
 int main() {
     std::mt19937_64 rng(12314342342342LL);
 
@@ -115,9 +124,28 @@ int main() {
     bidirectional_hoare_middle<int> hoare_mid_int;
 
     uniform_int_generator<int, std::mt19937_64> gen_1(rng, -1000000000, +1000000000);
+    sorter<int, std::less<int> > int_increasing_sorter;
+    sorter<int, std::greater<int> > int_decreasing_sorter;
+
     for (size_t i = 1, s = 10; i <= 7; ++i, s *= 10) {
-        performance_test<int> test_1("UniformInt[-1e9, +1e9]", s, s / 2, 100000000 / s, { &gen_1 });
-        test_1.test({ &stl_int, &hoare_mid_int });
+        performance_test<int> test("UniformInt[-1e9, +1e9]", s, s / 2, 100000000 / s, {
+            &gen_1
+        });
+        test.test({ &stl_int, &hoare_mid_int });
+    }
+
+    for (size_t i = 1, s = 10; i <= 7; ++i, s *= 10) {
+        performance_test<int> test("UniformIntInc[-1e9, +1e9]", s, s / 2, 100000000 / s, {
+            &gen_1, &int_increasing_sorter
+        });
+        test.test({ &stl_int, &hoare_mid_int });
+    }
+
+    for (size_t i = 1, s = 10; i <= 7; ++i, s *= 10) {
+        performance_test<int> test("UniformIntDec[-1e9, +1e9]", s, s / 2, 100000000 / s, {
+            &gen_1, &int_decreasing_sorter
+        });
+        test.test({ &stl_int, &hoare_mid_int });
     }
 
     return 0;
