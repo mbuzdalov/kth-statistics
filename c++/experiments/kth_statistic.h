@@ -35,5 +35,6 @@ struct kth_statistic {
     virtual size_t size() = 0;
     virtual void resize(size_t new_size) = 0;
     virtual element_t find(element_t *start, size_t size, size_t k) = 0;
+    virtual void display_and_reset_statistics(std::ostream &out) {};
     virtual ~kth_statistic() {}
 };
