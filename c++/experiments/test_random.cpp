@@ -7,13 +7,15 @@
 #include <random>
 #include <limits>
 
-void test_random(kth_statistic<int> *algorithm, size_t size, size_t count, size_t seed) {
-    test_common(algorithm, size, "test_random", 10000000);
+void test_random_common(kth_statistic<int> *algorithm, char const *name,
+                        size_t size, size_t count, size_t seed,
+                        int value_min = std::numeric_limits<int>::min(),
+                        int value_max = std::numeric_limits<int>::max()) {
+    test_common(algorithm, size, name, 10000000);
 
     std::mt19937_64 rng(seed);
     std::uniform_int_distribution<size_t> pos_gen(0, size - 1);
-    std::uniform_int_distribution<int> val_gen(std::numeric_limits<int>::min(),
-                                               std::numeric_limits<int>::max());
+    std::uniform_int_distribution<int> val_gen(value_min, value_max);
 
     int *reference = new int[size];
     int *working = new int[size];
@@ -29,7 +31,7 @@ void test_random(kth_statistic<int> *algorithm, size_t size, size_t count, size_
         array_copy(reference, size, working);
         int result = algorithm->find(working, size, k);
         if (expected != result) {
-            std::cerr << "[test_random, " << algorithm->name()
+            std::cerr << "[" << name << ", " << algorithm->name()
                       << "] Expected " << expected << ", found " << result
                       << " on test with k = " << k << std::endl;
             if (size <= 100) {
@@ -51,4 +53,14 @@ void test_random(kth_statistic<int> *algorithm, size_t size, size_t count, size_
 
     delete[] reference;
     delete[] working;
+}
+
+
+void test_random_repeated(kth_statistic<int> *algorithm, size_t size, size_t count, size_t seed) {
+    test_random_common(algorithm, "test_random_repeated", size, count, seed, 0, size / 10);
+}
+
+
+void test_random(kth_statistic<int> *algorithm, size_t size, size_t count, size_t seed) {
+    test_random_common(algorithm, "test_random", size, count, seed);
 }
