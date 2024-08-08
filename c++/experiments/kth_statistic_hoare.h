@@ -7,7 +7,7 @@
 
 template<typename element_t>
 struct bidirectional_hoare_middle : kth_statistic<element_t> {
-    char const *name() const { return "bidirectional Hoare scan with middle pivot"; }
+    char const *name() const { return "bidirectional Hoare"; }
     bool is_inplace() const { return true; }
     bool is_destructive() const { return false; }
     size_t size() { return std::numeric_limits<size_t>::max(); }
