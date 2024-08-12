@@ -128,26 +128,14 @@ struct sorter : sequence_changer<element_t> {
     }
 };
 
-struct example_sample_sizes : sample_sizes {
-    bool is_size_acceptable(size_t n) {
-        return n >= 20;
-    }
-    size_t n_phase_1_samples(size_t n) {
-        return n / 10;
-    }
-    size_t n_phase_2_samples(size_t n, size_t phase_1) {
-        return 1 + phase_1 / 10;
-    }
-};
-
 int main() {
     std::mt19937_64 rng(12314342342342LL);
 
-    example_sample_sizes ess;
+    fixed_ratio_sample_sizes fss(10, 10);
 
     stl_kth_statistic<int> stl_int;
     bidirectional_hoare_middle<int> hoare_mid_int;
-    predicting_kth_statistic<int> predicting_int(&ess);
+    predicting_kth_statistic<int> predicting_int(fss);
 
     std::vector< kth_statistic<int>* > all_int { &stl_int, &hoare_mid_int, &predicting_int };
 
@@ -155,15 +143,15 @@ int main() {
     sorter<int, std::less<int> > int_increasing_sorter;
     sorter<int, std::greater<int> > int_decreasing_sorter;
 
+    std::vector< std::pair< char const *, std::vector< sequence_changer<int>* > > > tests = {
+        { "UniformInt[-1e9, +1e9]", { &gen_1 } },
+        { "UniformIntInc[-1e9, +1e9]", { &gen_1, &int_increasing_sorter } },
+        { "UniformIntDec[-1e9, +1e9]", { &gen_1, &int_decreasing_sorter } }
+    };
+
     std::vector<size_t> divisors = { 2, 10 };
     for (size_t div : divisors) {
         std::cout << "********* 1/" << div << " order stat **********\n" << std::endl;
-
-        std::vector< std::pair< char const *, std::vector< sequence_changer<int>* > > > tests = {
-            { "UniformInt[-1e9, +1e9]", { &gen_1 } },
-            { "UniformIntInc[-1e9, +1e9]", { &gen_1, &int_increasing_sorter } },
-            { "UniformIntDec[-1e9, +1e9]", { &gen_1, &int_decreasing_sorter } }
-        };
 
         for (auto config : tests) {
             for (size_t i = 1, s = 10; i <= 7; ++i, s *= 10) {

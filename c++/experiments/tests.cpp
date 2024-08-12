@@ -38,19 +38,6 @@ void test_all(kth_statistic<int> *algorithm) {
     }
 }
 
-struct example_sample_sizes : sample_sizes {
-    bool is_size_acceptable(size_t n) {
-        return n >= 20;
-    }
-    size_t n_phase_1_samples(size_t n) {
-        return n / 10;
-    }
-    size_t n_phase_2_samples(size_t n, size_t phase_1) {
-        return 1 + phase_1 / 10;
-    }
-};
-
-
 int main() {
     stl_kth_statistic<int> stl_int;
     test_all(&stl_int);
@@ -58,8 +45,8 @@ int main() {
     bidirectional_hoare_middle<int> hoare_mid_int;
     test_all(&hoare_mid_int);
 
-    example_sample_sizes ess;
-    predicting_kth_statistic<int> predicting_int(&ess);
+    fixed_ratio_sample_sizes fss(10, 10);
+    predicting_kth_statistic<int> predicting_int(fss);
     test_all(&predicting_int);
 
     return 0;
