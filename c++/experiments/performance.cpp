@@ -132,12 +132,15 @@ int main() {
     std::mt19937_64 rng(12314342342342LL);
 
     fixed_ratio_sample_sizes fss(10, 10);
+    tuned_ratio_sample_sizes tss;
 
     stl_kth_statistic<int> stl_int;
     bidirectional_hoare_middle<int> hoare_mid_int;
-    predicting_kth_statistic<int> predicting_int(fss);
+    predicting_kth_statistic<int> predicting_int_fixed(fss, "simple predicting kth, fixed");
+    predicting_kth_statistic<int> predicting_int_tuned(tss, "simple predicting kth, tuned");
 
-    std::vector< kth_statistic<int>* > all_int { &stl_int, &hoare_mid_int, &predicting_int };
+    std::vector< kth_statistic<int>* > all_int { &stl_int, &hoare_mid_int,
+                                                 &predicting_int_fixed, &predicting_int_tuned };
 
     uniform_int_generator<int, std::mt19937_64> gen_1(rng, -1000000000, +1000000000);
     sorter<int, std::less<int> > int_increasing_sorter;

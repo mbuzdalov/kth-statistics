@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
     std::mt19937_64 rng(12314342342342LL);
 
     variable_ratio_sample_sizes vss;
-    predicting_kth_statistic<int> predicting_int(vss);
+    predicting_kth_statistic<int> predicting_int(vss, "_");
 
     uniform_int_generator<int, std::mt19937_64> gen_1(rng, -1000000000, +1000000000);
     sorter<int, std::less<int> > int_increasing_sorter;

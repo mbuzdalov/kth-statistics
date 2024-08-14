@@ -50,6 +50,7 @@ template<typename element_t>
 struct predicting_kth_statistic : kth_statistic<element_t> {
 private:
     size_t _size;
+    char const *_name;
     element_t *_mem;
     size_t _hits, _misses;
     size_t _phase_1_samples, _phase_2_samples;
@@ -57,14 +58,15 @@ private:
     sample_sizes &_sample_sizes;
 
 public:
-    char const *name() const { return "simple predicting kth"; }
+    char const *name() const { return _name; }
     bool is_inplace() const { return false; }
     bool is_destructive() const { return false; } // actually false as we use the aux array
     size_t size() { return _size; }
 
     predicting_kth_statistic(sample_sizes &sample_sizes,
+                             const char *name,
                              size_t initial_size = 1)
-    : _size(initial_size),
+    : _size(initial_size), _name(name),
       _hits(0), _misses(0), _phase_1_samples(0), _phase_2_samples(0),
       _n_below(0), _n_mid(0), _n_above(0),
       _sample_sizes(sample_sizes) {
