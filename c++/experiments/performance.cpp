@@ -119,6 +119,21 @@ struct uniform_int_generator : sequence_changer<element_t> {
     }
 };
 
+template<typename element_t, typename rng_t>
+struct uniform_real_generator : sequence_changer<element_t> {
+    rng_t &rng;
+    element_t min, max;
+
+    uniform_real_generator(rng_t &rng, element_t min, element_t max): rng(rng), min(min), max(max) {}
+
+    void generate(element_t *array, size_t size) {
+        std::uniform_real_distribution<element_t> value_gen(min, max);
+        for (size_t i = 0; i < size; ++i) {
+            array[i] = value_gen(rng);
+        }
+    }
+};
+
 template<typename element_t, typename comparator_t>
 struct sorter : sequence_changer<element_t> {
     comparator_t cmp;
@@ -142,24 +157,51 @@ int main() {
     std::vector< kth_statistic<int>* > all_int { &stl_int, &hoare_mid_int,
                                                  &predicting_int_fixed, &predicting_int_tuned };
 
-    uniform_int_generator<int, std::mt19937_64> gen_1(rng, -1000000000, +1000000000);
+    stl_kth_statistic<double> stl_dbl;
+    bidirectional_hoare_middle<double> hoare_mid_dbl;
+    predicting_kth_statistic<double> predicting_dbl_fixed(fss, "simple predicting kth, fixed");
+    predicting_kth_statistic<double> predicting_dbl_tuned(tss, "simple predicting kth, tuned");
+
+    std::vector< kth_statistic<double>* > all_dbl { &stl_dbl, &hoare_mid_dbl,
+                                                 &predicting_dbl_fixed, &predicting_dbl_tuned };
+
+    uniform_int_generator<int, std::mt19937_64> gen_int_1(rng, -1000000000, +1000000000);
+    uniform_real_generator<double, std::mt19937_64> gen_dbl_1(rng, -1.0, +1.0);
     sorter<int, std::less<int> > int_increasing_sorter;
     sorter<int, std::greater<int> > int_decreasing_sorter;
+    sorter<double, std::less<double> > dbl_increasing_sorter;
+    sorter<double, std::greater<double> > dbl_decreasing_sorter;
 
-    std::vector< std::pair< char const *, std::vector< sequence_changer<int>* > > > tests = {
-        { "UniformInt[-1e9, +1e9]", { &gen_1 } },
-        { "UniformIntInc[-1e9, +1e9]", { &gen_1, &int_increasing_sorter } },
-        { "UniformIntDec[-1e9, +1e9]", { &gen_1, &int_decreasing_sorter } }
+    std::vector< std::pair< char const *, std::vector< sequence_changer<int>* > > > int_tests = {
+        { "UniformInt[-1e9, +1e9]", { &gen_int_1 } },
+        { "UniformIntInc[-1e9, +1e9]", { &gen_int_1, &int_increasing_sorter } },
+        { "UniformIntDec[-1e9, +1e9]", { &gen_int_1, &int_decreasing_sorter } }
+    };
+
+    std::vector< std::pair< char const *, std::vector< sequence_changer<double>* > > > dbl_tests = {
+        { "UniformDouble[-1, +1]", { &gen_dbl_1 } },
+        { "UniformDoubleInc[-1, +1]", { &gen_dbl_1, &dbl_increasing_sorter } },
+        { "UniformDoubleDec[-1, +1]", { &gen_dbl_1, &dbl_decreasing_sorter } }
     };
 
     std::vector<size_t> divisors = { 2, 10 };
     for (size_t div : divisors) {
-        std::cout << "********* 1/" << div << " order stat **********\n" << std::endl;
+        std::cout << "********* Int, 1/" << div << " order stat **********\n" << std::endl;
 
-        for (auto config : tests) {
+        for (auto config : int_tests) {
             for (size_t i = 1, s = 10; i <= 7; ++i, s *= 10) {
                 performance_test<int> test(config.first, s, s / div, 100000000 / s, config.second);
                 test.test(all_int);
+            }
+            std::cout << std::endl;
+        }
+
+        std::cout << "********* Double, 1/" << div << " order stat **********\n" << std::endl;
+
+        for (auto config : dbl_tests) {
+            for (size_t i = 1, s = 10; i <= 7; ++i, s *= 10) {
+                performance_test<double> test(config.first, s, s / div, 100000000 / s, config.second);
+                test.test(all_dbl);
             }
             std::cout << std::endl;
         }
