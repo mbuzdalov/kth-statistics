@@ -56,32 +56,24 @@ public:
         }
     }
 
-    void test(kth_statistic<element_t> &algorithm, variable_ratio_sample_sizes &sizes,
-              size_t min_divisor_1, size_t max_divisor_1,
-              size_t min_divisor_2, size_t max_divisor_2) {
-//        std::cout << "Measurement '" << measurement_name
-//                  << "', size = " << size
-//                  << ", k = " << k
-//                  << ", count = " << count
-//                  << ":" << std::endl;
-
+    void test(kth_statistic<element_t> &algorithm, variable_ratio_sample_sizes &sizes, size_t max_divisor_prod) {
         bool hash_initialized = false;
         int expected_hash = 0;
 
         std::map< std::pair<size_t, size_t>, double > cache;
 
         algorithm.resize(size);
-        for (size_t div_1 = min_divisor_1; div_1 <= max_divisor_1; ++div_1) {
-            for (size_t div_2 = min_divisor_2; div_2 <= max_divisor_2; ++div_2) {
+        for (size_t div_prod = 1; div_prod <= max_divisor_prod; ++div_prod) {
+            for (size_t div_1 = 2; div_1 <= div_prod; ++div_1) {
                 sizes._phase_1_divisor = div_1;
-                sizes._phase_2_divisor = div_2;
+                sizes._phase_2_divisor = div_prod / div_1;
 
                 size_t p1 = sizes.n_phase_1_samples(size);
                 size_t p2 = sizes.n_phase_2_samples(size, p1);
                 auto p12 = std::make_pair(p1, p2);
                 if (cache.find(p12) != cache.end()) {
                     double s = cache[p12];
-                    std::cout << div_1 << "," << div_2 << "," << std::setprecision(4) << std::scientific << s << ",dup" << std::endl;
+                    std::cout << div_prod << "," << div_1 << "," << std::setprecision(4) << std::scientific << s << ",dup" << std::endl;
                     continue;
                 }
 
@@ -114,7 +106,7 @@ public:
 
                 double s = normalized.count();
                 cache[p12] = s;
-                std::cout << div_1 << "," << div_2 << "," << std::setprecision(4) << std::scientific << s << ",orig" << std::endl;
+                std::cout << div_prod << "," << div_1 << "," << std::setprecision(4) << std::scientific << s << ",orig" << std::endl;
             }
             std::cout << std::endl;
         }
@@ -187,7 +179,7 @@ int main(int argc, char *argv[]) {
     for (size_t div : divisors) {
         auto config = tests[test_no];
         performance_test<int> test(config.first, size, size / div, 100000000 / size, config.second);
-        test.test(predicting_int, vss, 2, 30, 1, 20);
+        test.test(predicting_int, vss, std::min(size_t(3000), size / 2));
     }
 
     return 0;
