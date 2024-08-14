@@ -39,6 +39,13 @@ private:
     size_t _phase_1_divisor, _phase_2_divisor;
 };
 
+struct tuned_ratio_sample_sizes : sample_sizes {
+    tuned_ratio_sample_sizes();
+    bool is_size_acceptable(size_t n);
+    size_t n_phase_1_samples(size_t n);
+    size_t n_phase_2_samples(size_t n, size_t phase_1);
+};
+
 template<typename element_t>
 struct predicting_kth_statistic : kth_statistic<element_t> {
 private:
