@@ -49,5 +49,9 @@ int main() {
     predicting_kth_statistic<int> predicting_int(fss);
     test_all(&predicting_int);
 
+    tuned_ratio_sample_sizes tss;
+    predicting_kth_statistic<int> predicting_int_tuned(tss);
+    test_all(&predicting_int_tuned);
+
     return 0;
 }
