@@ -3,6 +3,7 @@
 
 #include <iterator>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
@@ -17,10 +18,11 @@ public:
     using iterator_category = std::random_access_iterator_tag;
 
 private:
-    static constexpr size_t IDX_NAN = std::numeric_limits<size_t>::max();
+    static constexpr ptrdiff_t POS_INF = std::numeric_limits<ptrdiff_t>::max();
+    static constexpr ptrdiff_t NEG_INF = std::numeric_limits<ptrdiff_t>::min();
 
     std::vector<T> *base;
-    size_t index;
+    ptrdiff_t index;
 
     void compare_precheck(self_type const &that) const {
         if (base != that.base) {
@@ -29,11 +31,26 @@ private:
     }
 
     size_t index_precheck(size_t offset) const {
-        if (index < IDX_NAN - offset && index + offset < base->size()) {
-            return index + offset;
-        } else {
-            throw std::out_of_range("Attempt to derefence a safe_iterator with an invalid index");
+        if (index == POS_INF) {
+            throw std::out_of_range("Attempt to dereference a safe_iterator which is in the positive saturated state");
         }
+        if (index == NEG_INF) {
+            throw std::out_of_range("Attempt to dereference a safe_iterator which is in the negative saturated state");
+        }
+        if (index >= 0) {
+            size_t ii = size_t(index);
+            if (ii < std::numeric_limits<size_t>::max() - offset && ii + offset < base->size()) {
+                return ii + offset;
+            }
+        } else {
+            size_t ii = size_t(-index);
+            if (ii <= offset && offset - ii < base->size()) {
+                return offset - ii;
+            }
+        }
+        std::ostringstream oss;
+        oss << "Attempt to derefence a safe_iterator with an invalid index: index = " << index << ", offset = " << offset << ", size " << base->size();
+        throw std::out_of_range(oss.str());
     }
 
     std::vector<T> &precheck_base() const {
@@ -44,20 +61,20 @@ private:
         }
     }
 
-    self_type &move_pos(size_t delta) {
-        if (index < IDX_NAN - delta) {
+    self_type &move_pos(ptrdiff_t delta) {
+        if (index < POS_INF - delta) {
             index += delta;
         } else {
-            index = IDX_NAN;
+            index = POS_INF;
         }
         return *this;
     }
 
-    self_type &move_neg(size_t delta) {
-        if (index >= delta) {
+    self_type &move_neg(ptrdiff_t delta) {
+        if (index > NEG_INF + delta) {
             index -= delta;
         } else {
-            index = IDX_NAN;
+            index = NEG_INF;
         }
         return *this;
     }
@@ -65,7 +82,7 @@ private:
 public:
 
     safe_iterator() noexcept: base(NULL), index(0) {}
-    safe_iterator(std::vector<T> &base, size_t index = 0) noexcept: base(&base), index(index) {}
+    safe_iterator(std::vector<T> &base, ptrdiff_t index = 0) noexcept: base(&base), index(index) {}
 
     safe_iterator(self_type const &that) noexcept = default;
     safe_iterator(self_type      &&that) noexcept = default;
@@ -113,7 +130,7 @@ public:
     }
 
     self_type &operator ++() {
-        if (index != IDX_NAN) {
+        if (index != NEG_INF) {
             ++index;
         }
         return *this;
@@ -126,7 +143,7 @@ public:
     }
 
     self_type &operator --() {
-        if (index != IDX_NAN) {
+        if (index != POS_INF) {
             --index;
         }
         return *this;
@@ -139,7 +156,7 @@ public:
     }
 
     self_type &operator += (ptrdiff_t delta) {
-        return delta >= 0 ? move_pos(size_t(delta)) : move_neg(size_t(-delta));
+        return delta >= 0 ? move_pos(delta) : move_neg(-delta);
     }
 
     self_type operator + (ptrdiff_t delta) const {
@@ -147,7 +164,7 @@ public:
     }
 
     self_type &operator -= (ptrdiff_t delta) {
-        return delta >= 0 ? move_neg(size_t(delta)) : move_pos(size_t(-delta));
+        return delta >= 0 ? move_neg(delta) : move_pos(-delta);
     }
 
     self_type operator - (ptrdiff_t delta) const {
