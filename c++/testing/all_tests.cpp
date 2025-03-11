@@ -33,6 +33,13 @@ template <
         size_t seed = 87512451357631 * (idx + 1);
         test_random_repeated<algorithm_t>(size, count, seed);
     }
+
+    for (size_t idx = 0; idx < 6; ++idx) {
+        size_t size = rnd_sizes[idx];
+        size_t count = 10000000 / size;
+        size_t seed = 87512451357630 * (idx + 1);
+        test_random_double<algorithm_t>(size, count, seed);
+    }
 }
 
 int main() {

@@ -60,4 +60,34 @@ template <
     test_random_common<algorithm_t>("random tests with all-int value range", size, count, seed);
 }
 
+template <
+    template<typename, typename, typename> typename algorithm_t
+> requires kth_statistic_algorithm <
+    algorithm_t, double, std::less<double>, safe_iterator<double>
+> void test_random_double(size_t size, size_t count, size_t seed) {
+    algorithm_t<double, std::less<double>, safe_iterator<double>> algo;
+    algo.resize(size);
+    FAIL_IF_FALSE(algo.max_size() >= size);
+
+    std::mt19937_64 rng(seed);
+    std::uniform_int_distribution<size_t> pos_gen(0, size - 1);
+    std::uniform_real_distribution<double> val_gen(0, 1);
+
+    std::vector<double> reference(size), working(size);
+
+    for (size_t attempt = 0; attempt < count; ++attempt) {
+        size_t k = pos_gen(rng);
+        for (size_t i = 0; i < size; ++i) {
+            reference[i] = val_gen(rng);
+            working[i] = reference[i];
+        }
+        std::nth_element(working.begin(), working.begin() + k, working.end());
+        double expected = working[k];
+        working = reference;
+        FAIL_IF_NOT_EQUAL(expected, algo(safe_iterator(working), size, k));
+    }
+
+    std::cout << "OK: algorithm '" << algo.name() << "', random [0; 1] double tests of size " << size << std::endl;
+}
+
 #endif // __KTH_STATISTIC__TESTING__TEST_RANDOM_HPP__
