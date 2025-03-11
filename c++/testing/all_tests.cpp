@@ -5,6 +5,7 @@
 
 #include "test_all_01s.hpp"
 #include "test_all_permutations.hpp"
+#include "test_random.hpp"
 
 template <
     template<typename, typename, typename> typename algorithm_t
@@ -15,6 +16,22 @@ template <
     }
     for (size_t size = 1; size <= 9; ++size) {
         test_all_permutations<algorithm_t>(size);
+    }
+
+    size_t rnd_sizes[] = { 10, 100, 1000, 10000, 100000, 1000000 };
+
+    for (size_t idx = 0; idx < 6; ++idx) {
+        size_t size = rnd_sizes[idx];
+        size_t count = 10000000 / size;
+        size_t seed = 87512451357632 * (idx + 1);
+        test_random<algorithm_t>(size, count, seed);
+    }
+
+    for (size_t idx = 0; idx < 6; ++idx) {
+        size_t size = rnd_sizes[idx];
+        size_t count = 10000000 / size;
+        size_t seed = 87512451357631 * (idx + 1);
+        test_random_repeated<algorithm_t>(size, count, seed);
     }
 }
 
