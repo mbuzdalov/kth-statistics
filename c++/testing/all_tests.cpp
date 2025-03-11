@@ -43,6 +43,7 @@ template <
 }
 
 int main() {
+    run_all_tests<kth_statistic_algorithm_hoare>();
     run_all_tests<kth_statistic_algorithm_stl>();
     return 0;
 }
