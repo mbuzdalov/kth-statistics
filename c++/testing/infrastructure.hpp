@@ -9,7 +9,7 @@
     auto found_val = (found); \
     if (expected != found) { \
         std::ostringstream oss; \
-        oss << "Test " << __func__ << " failed: '" << #found << "' was expected to be '" << expected_val << "' but was'" << found_val << "'"; \
+        oss << "Test " << __func__ << " failed: '" << #found << "' was expected to be '" << expected_val << "' but was '" << found_val << "'"; \
         throw std::logic_error(oss.str()); \
     } \
 }
